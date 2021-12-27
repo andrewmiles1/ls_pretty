@@ -1,4 +1,8 @@
 CC=g++
+CFLAGS=-I include -o main
 
-main:
-\t$(CC) -o main main.cpp
+build:
+	$(CC) $(CFLAGS) main.cpp
+run:
+	$(CC) $(CFLAGS) main.cpp
+	main
