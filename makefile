@@ -1,8 +1,5 @@
 CC=g++
-CFLAGS=-I include -o main
+CFLAGS=-I include -o lspretty
 
-build:
+main:
 	$(CC) $(CFLAGS) main.cpp
-run:
-	$(CC) $(CFLAGS) main.cpp
-	main

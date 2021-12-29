@@ -2,67 +2,38 @@
 #include "filesystem.hpp"
 #include <iomanip>
 #include "flag_functions.h"
+#include <chrono>
 namespace fs = ghc::filesystem;
 
 //g++ -o main main.cpp -lstdc++fs
-int main(int argc, char *argv[]) {
+int main() {
   fs::path cwd = 
   fs::current_path();
 
-  bool parsing_flag;//so we can track when we're parsing
-  bool reading_custom_path;//reading state of just reading path
-  std::string custom_path= "";//to hold path from arg
-  //parse arguments
-  for(int i = 0; i < argc; i++){	
-	std::cout << argv[i];
-	if(*argv[i] == '-'){
-		reading_custom_path = false;
-		switch(*argv[i+1]){
-			case 'h':
-				//call help function, exit
-				break;
-			case 's':
-				//size
-				break;
-			case 'o':
-				//owner
-				break;
-			case 'm':
-				//last modified
-				break;
-			case 'p':
-				//custom path 
-				reading_custom_path = true;
-				break;
-			default:
-				//invalid argument, err
-				break;
-		}
-		i++;//increment since we read next already
-	}
-	else if(reading_custom_path = true){
-		custom_path += *argv[i];
-	}
-	else{
-		//invalid argument, err
-	}
-	std::cout << custom_path << std::endl;
-
-  }
-
   std::cout << "Files in " << cwd << std::endl;
-  std::cout << std::left << std::setw(20) << "name"  << "size" << std::endl;
-  std::cout << "----------------------------------------" << std::endl;
+  std::cout << ":---------------------------------------------------------------:" <<
+	  std::endl;
+  std::cout << std::left << std::setw(20) << ":Name"  <<
+	 std::setw(20) << "Size" << std::setw(24) << "Last Modified" <<
+	 ":" << std::endl;
+  std::cout << ":---------------------------------------------------------------:" << std::endl;
   
-  //main output loop
+  //main output loop, iterates over each file
   for(auto const& dir_entry: fs::directory_iterator{cwd} ){
+	//get file name and add / if file is directory
 	std::string filename = dir_entry.path().filename();
-	std::cout << filename;
 	if(fs::status(dir_entry.path()).type() == fs::file_type::directory){
-		std::cout << "/";
+		filename += '/';
 	}
-	std::cout << std::endl;
-  }
+	//store last modified time into string
+	struct stat attr;
+	stat(dir_entry.path().c_str(), &attr);
+	std::string time_last_modified = ctime(&attr.st_mtime);
 
+	//print stats to the screen
+	std::cout << std::setw(20) << filename <<
+		std::setw(20) <<  fs::file_size(dir_entry.path()) <<
+		time_last_modified;
+  }
 
 } 
